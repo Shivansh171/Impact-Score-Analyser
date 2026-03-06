@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cricket Impact Metric</title>
+    <style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+:root {
+    --bg-dark: #0f172a;
+    --bg-darker: #020617;
+    --glass-bg: rgba(30, 41, 59, 0.7);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --text-primary: #f8fafc;
+    --text-secondary: #94a3b8;
+    --accent-glow: rgba(34, 197, 94, 0.4);
+    --primary-btn: linear-gradient(135deg, #10b981, #3b82f6);
+    --primary-btn-hover: linear-gradient(135deg, #059669, #2563eb);
+    --input-bg: rgba(15, 23, 42, 0.6);
+    --highlight: #22c55e;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background: radial-gradient(circle at top, #1e293b 0%, #0f172a 100%);
+    color: var(--text-primary);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.orb-1,
+.orb-2 {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    z-index: -1;
+    opacity: 0.5;
+}
+
+.orb-1 {
+    top: -50px;
+    left: -100px;
+    width: 300px;
+    height: 300px;
+    background: #3b82f6;
+}
+
+.orb-2 {
+    bottom: -100px;
+    right: -50px;
+    width: 400px;
+    height: 400px;
+    background: #10b981;
+}
+
+.container {
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 15px 20px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.center-flex {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.glass-panel {
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.glass-panel:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+}
+
+h1, h2, h3 {
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 20px;
+}
+
+h1 {
+    font-size: 2.5rem;
+    text-align: center;
+    background: linear-gradient(to right, #fff, #94a3b8);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.card {
+    padding: 40px;
+    width: 100%;
+    max-width: 450px;
+    margin: 0 auto;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+input {
+    width: 100%;
+    padding: 14px;
+    margin-bottom: 20px;
+    background: var(--input-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 8px;
+    color: var(--text-primary);
+    font-family: inherit;
+    font-size: 1rem;
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+input:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
+    background: rgba(15, 23, 42, 0.8);
+}
+
+button {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 8px;
+    background: var(--primary-btn);
+    color: white;
+    font-weight: 600;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 4px 15px var(--accent-glow);
+}
+
+button:hover {
+    background: var(--primary-btn-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.6);
+}
+
+button:active {
+    transform: translateY(0);
+}
+
+.result {
+    margin-top: 25px;
+    font-size: 24px;
+    font-weight: 700;
+    text-align: center;
+    color: var(--highlight);
+    text-shadow: 0 0 10px rgba(34, 197, 94, 0.4);
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+
+.result.show {
+    opacity: 1;
+}
+    </style>
+</head>
+
+<body>
+    <!-- Decorative background elements -->
+    <div class="orb-1"></div>
+    <div class="orb-2"></div>
+
+    <div class="center-flex">
+        <div class="container">
+            <h1>🏏 Cricket Impact Metric</h1>
+
+            <div class="card glass-panel">
+                <label for="playerName">Player Name</label>
+                <input type="text" id="playerName" placeholder="e.g. Virat Kohli">
+
+                <label for="runs">Runs Scored</label>
+                <input type="number" id="runs" placeholder="0">
+
+                <label for="ballsFaced">Balls Faced</label>
+                <input type="number" id="ballsFaced" placeholder="0" max="10">
+
+                <label for="wickets">Wickets Taken</label>
+                <input type="number" id="wickets" placeholder="0" max="10">
+
+                <label for="situation">Match Situation Factor (1-10)</label>
+                <input type="number" id="situation" placeholder="1" min="1" max="10">
+
+                <button onclick="calculateImpactClick()">Calculate Impact Score</button>
+            </div>
+
+            <div class="result" id="result"></div>
+        </div>
+    </div>
+
+    <script>
+        function calculateImpactClick() {
+            if (typeof calculateImpact === 'function') {
+                const res = document.getElementById('result');
+                res.classList.add('show');
+                calculateImpact();
+            }
+        }
+
+        function calculateImpact() {
+            const playerName = document.getElementById('playerName').value || 'Unknown Player';
+            const runs = parseFloat(document.getElementById('runs').value) || 0;
+            const balls = parseFloat(document.getElementById('ballsFaced').value) || 0;
+            const strikeRate = balls > 0 ? (runs / balls) * 100 : 0;
+            const wickets = parseFloat(document.getElementById('wickets').value) || 0;
+            const situation = parseFloat(document.getElementById('situation').value) || 1;
+
+            const impact = Math.round(runs * 0.4 + strikeRate * 0.2 + wickets * 15 + situation * 5);
+
+            document.getElementById('result').innerText = `Impact Score for ${playerName}: ${impact}`;
+
+            let playerHistory = JSON.parse(localStorage.getItem(`cricketPlayerHistory_${playerName}`) || '[]');
+
+            let difference = 0;
+            if (playerHistory.length > 0) {
+                const lastCalculation = playerHistory[playerHistory.length - 1];
+                difference = impact - lastCalculation.impact;
+            }
+
+            const currentCalculation = {
+                name: playerName,
+                runs: runs,
+                balls: balls,
+                strikeRate: strikeRate,
+                wickets: wickets,
+                situation: situation,
+                impact: impact,
+                difference: difference,
+                timestamp: new Date().toISOString()
+            };
+
+            playerHistory.push(currentCalculation);
+
+            localStorage.setItem('cricketPlayerData', JSON.stringify(currentCalculation)); // The active player for main2
+            localStorage.setItem(`cricketPlayerHistory_${playerName}`, JSON.stringify(playerHistory)); // The player's history
+
+            // Redirect to the Django calculator view instead of index2 static html
+            window.location.href = '/calculator/';
+        }
+
+        document.getElementById('playerName')?.addEventListener('input', function (e) {
+            const name = e.target.value;
+            const history = JSON.parse(localStorage.getItem(`cricketPlayerHistory_${name}`) || '[]');
+
+            if (history.length > 0) {
+                const lastData = history[history.length - 1];
+                document.getElementById('runs').value = lastData.runs;
+                document.getElementById('ballsFaced').value = lastData.balls !== undefined ? lastData.balls : '';
+                document.getElementById('wickets').value = lastData.wickets;
+                document.getElementById('situation').value = lastData.situation;
+            } else {
+                if (document.getElementById('runs').value !== '') document.getElementById('runs').value = '';
+                if (document.getElementById('ballsFaced').value !== '') document.getElementById('ballsFaced').value = '';
+                if (document.getElementById('wickets').value !== '') document.getElementById('wickets').value = '';
+                if (document.getElementById('situation').value !== '') document.getElementById('situation').value = '';
+            }
+        });
+    </script>
+</body>
+
+</html>

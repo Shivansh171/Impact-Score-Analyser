@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ImpactMetric Dashboard</title>
+    <style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+:root {
+    --bg-dark: #0f172a;
+    --bg-darker: #020617;
+    --glass-bg: rgba(30, 41, 59, 0.7);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --text-primary: #f8fafc;
+    --text-secondary: #94a3b8;
+    --accent-glow: rgba(34, 197, 94, 0.4);
+    --primary-btn: linear-gradient(135deg, #10b981, #3b82f6);
+    --primary-btn-hover: linear-gradient(135deg, #059669, #2563eb);
+    --input-bg: rgba(15, 23, 42, 0.6);
+    --highlight: #22c55e;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background: radial-gradient(circle at top, #1e293b 0%, #0f172a 100%);
+    color: var(--text-primary);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* Background floating orbs for aesthetic */
+.orb-1,
+.orb-2 {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    z-index: -1;
+    opacity: 0.5;
+}
+
+.orb-1 {
+    top: -50px;
+    left: -100px;
+    width: 300px;
+    height: 300px;
+    background: #3b82f6;
+}
+
+.orb-2 {
+    bottom: -100px;
+    right: -50px;
+    width: 400px;
+    height: 400px;
+    background: #10b981;
+}
+
+/* Common Layout */
+.container {
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 15px 20px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.center-flex {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+/* Glassmorphism Classes */
+.glass-panel {
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.glass-panel:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+}
+
+/* Typography */
+h1,
+h2,
+h3 {
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 20px;
+}
+
+h1 {
+    font-size: 2.5rem;
+    text-align: center;
+    background: linear-gradient(to right, #fff, #94a3b8);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+header {
+    background: rgba(2, 6, 23, 0.8);
+    backdrop-filter: blur(10px);
+    padding: 10px 0;
+    text-align: center;
+    font-size: 20px;
+    font-weight: 700;
+    border-bottom: 1px solid var(--glass-border);
+    flex-shrink: 0;
+}
+
+/* Forms & Inputs */
+.card {
+    padding: 40px;
+    width: 100%;
+    max-width: 450px;
+    margin: 0 auto;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+input {
+    width: 100%;
+    padding: 14px;
+    margin-bottom: 20px;
+    background: var(--input-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 8px;
+    color: var(--text-primary);
+    font-family: inherit;
+    font-size: 1rem;
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+input:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
+    background: rgba(15, 23, 42, 0.8);
+}
+
+/* Buttons */
+button {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 8px;
+    background: var(--primary-btn);
+    color: white;
+    font-weight: 600;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 4px 15px var(--accent-glow);
+}
+
+button:hover {
+    background: var(--primary-btn-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.6);
+}
+
+button:active {
+    transform: translateY(0);
+}
+
+#fullAnalysisBtn {
+    width: auto;
+    padding: 8px 16px;
+    font-size: 0.85rem;
+}
+
+#fullAnalysisBtn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.6);
+}
+
+.small-btn {
+    padding: 10px 14px;
+    font-size: 0.9rem;
+    background: var(--primary-btn);
+    color: #fff;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+.small-btn:hover {
+    background: var(--primary-btn-hover);
+    transform: translateY(-2px);
+}
+
+#impactChart {
+    transition: opacity 0.4s ease;
+    opacity: 1;
+}
+
+.result {
+    margin-top: 25px;
+    font-size: 24px;
+    font-weight: 700;
+    text-align: center;
+    color: var(--highlight);
+    text-shadow: 0 0 10px rgba(34, 197, 94, 0.4);
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+
+.result.show {
+    opacity: 1;
+}
+
+.search-box {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 15px;
+    justify-content: center;
+    flex-wrap: wrap;
+    flex-shrink: 0;
+}
+
+.search-box input {
+    margin-bottom: 0;
+    width: 300px;
+}
+
+.search-box button {
+    width: auto;
+    padding: 14px 24px;
+}
+
+.back-link {
+    color: var(--text-secondary);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    transition: color 0.3s ease;
+    font-weight: 500;
+}
+
+.back-link:hover {
+    color: white;
+}
+
+.cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    margin-bottom: 15px;
+    flex-shrink: 0;
+}
+
+.cards .card {
+    width: 100%;
+    padding: 15px;
+    text-align: center;
+}
+
+.cards .card .label {
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+    color: var(--text-secondary);
+    margin-bottom: 10px;
+}
+
+.score {
+    font-size: 42px;
+    font-weight: 800;
+    color: var(--highlight);
+    text-shadow: 0 0 20px rgba(34, 197, 94, 0.3);
+}
+
+.chart-container {
+    padding: 15px;
+    margin-bottom: 15px;
+    flex: 1;
+    min-height: 200px;
+    position: relative;
+}
+
+.leaderboard {
+    padding: 15px;
+    flex-shrink: 0;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+th {
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    padding: 8px;
+    border-bottom: 1px solid var(--glass-border);
+    text-align: left;
+}
+
+td {
+    padding: 8px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+tr:last-child td {
+    border-bottom: none;
+}
+
+tr:hover td {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+@media (max-width: 768px) {
+    h1 {
+        font-size: 2rem;
+    }
+
+    .search-box {
+        flex-direction: column;
+    }
+
+    .search-box input,
+    .search-box button {
+        width: 100%;
+    }
+}
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+    <!-- Decorative background elements -->
+    <div class="orb-1"></div>
+    <div class="orb-2"></div>
+
+    <header>
+        ImpactMetric Dashboard
+    </header>
+
+    <div class="container">
+        <!-- Search and Navigation -->
+        <div class="search-box glass-panel" style="padding: 20px;">
+            <input type="text" id="playerInput" placeholder="Enter Player Name">
+            <button onclick="calculateImpact()">Calculate Impact</button>
+            <a href="/improve.html" class="back-link" style="padding: 10px 16px; background: linear-gradient(135deg, #8b5cf6, #ec4899); border-radius: 8px; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; margin-left: 8px;">
+                💡 Ask AI
+            </a>
+            <a href="/" class="back-link">
+                <!-- SVG Icon for back arrow -->
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round" style="margin-right:8px;">
+                    <line x1="19" y1="12" x2="5" y2="12"></line>
+                    <polyline points="12 19 5 12 12 5"></polyline>
+                </svg>
+                Back to Calculator
+            </a>
+        </div>
+
+        <!-- Metric Cards -->
+        <div class="cards">
+            <div class="card glass-panel">
+                <div class="label">Player</div>
+                <div id="playerName" style="font-size: 24px; font-weight: 600; margin-top: 10px;">-</div>
+            </div>
+
+            <div class="card glass-panel" style="position: relative;">
+                <div class="label">Impact Score</div>
+                <div class="score" id="impactScore">0</div>
+                <div id="impactDifference" style="font-size: 0.85rem; font-weight: 600; margin-top: 5px; opacity: 0;">
+                    <!-- Difference will be injected here -->
+                </div>
+            </div>
+
+            <div class="card glass-panel">
+                <div class="label">Global Rank</div>
+                <div id="rank" style="font-size: 32px; font-weight: 700; margin-top: 10px; color: #3b82f6;">-</div>
+            </div>
+        </div>
+
+        <!-- Chart Section -->
+        <div class="chart-container glass-panel" style="display: flex; flex-direction: column;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <h3
+                    style="margin: 0; color: var(--text-secondary); text-transform: uppercase; font-size: 0.9rem; letter-spacing: 1px; flex-shrink: 0;">
+                    Impact Breakdown</h3>
+                <button id="fullAnalysisBtn" onclick="toggleFullAnalysis()"
+                    style="padding: 8px 16px; background: linear-gradient(135deg, #10b981, #3b82f6); color: #f8fafc; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 0.85rem; transition: transform 0.2s ease;">
+                    Full Analysis
+                </button>
+            </div>
+            <div
+                style="position: relative; flex: 1; min-height: 0; width: 100%; display: flex; justify-content: center; align-items: center; padding-top: 10px;">
+                <canvas id="impactChart" style="opacity: 0;"></canvas>
+            </div>
+        </div>
+
+        <!-- Leaderboard -->
+        <div class="leaderboard glass-panel">
+            <h3>Global Impact Leaderboard</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Rank</th>
+                        <th>Player</th>
+                        <th>Impact Score</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><span style="color: #fbbf24; font-weight:bold;">#1</span></td>
+                        <td style="font-weight: 500;">Virat Kohli</td>
+                        <td style="color: var(--highlight); font-weight: 700;">89</td>
+                    </tr>
+                    <tr>
+                        <td><span style="color: #94a3b8; font-weight:bold;">#2</span></td>
+                        <td style="font-weight: 500;">Babar Azam</td>
+                        <td style="color: var(--highlight); font-weight: 700;">86</td>
+                    </tr>
+                    <tr>
+                        <td><span style="color: #b45309; font-weight:bold;">#3</span></td>
+                        <td style="font-weight: 500;">Joe Root</td>
+                        <td style="color: var(--highlight); font-weight: 700;">84</td>
+                    </tr>
+                    <tr>
+                        <td>#4</td>
+                        <td style="font-weight: 500;">Kane Williamson</td>
+                        <td style="color: var(--highlight); font-weight: 700;">80</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        let chart;
+        let chartData = {};
+        let isFullAnalysis = false;
+
+        function calculateImpact() {
+            let player = document.getElementById("playerInput").value;
+            let storedData = localStorage.getItem('cricketPlayerData');
+            let playerData;
+
+            if (storedData) {
+                playerData = JSON.parse(storedData);
+                // Update only if input is empty, otherwise use input
+                if (!player) {
+                    player = playerData.name;
+                    document.getElementById("playerInput").value = player;
+                }
+            }
+
+            // If still no player data or if user typed a new name, generate random
+            if (!playerData || (player && player !== playerData.name)) {
+                let runs = Math.floor(Math.random() * 120);
+                let balls = Math.floor(runs * (Math.random() * 0.5 + 0.5)) + 10; // Generate reasonable balls
+                let strikeRate = (runs / balls) * 100;
+                let wickets = Math.floor(Math.random() * 4);
+                let situation = Math.floor(Math.random() * 10) + 1;
+
+                let impact = Math.round(
+                    runs * 0.4 +
+                    strikeRate * 0.2 +
+                    wickets * 15 +
+                    situation * 5
+                );
+
+                playerData = {
+                    name: player || 'Random Player',
+                    runs: runs,
+                    balls: balls,
+                    strikeRate: strikeRate,
+                    wickets: wickets,
+                    situation: situation,
+                    impact: impact
+                };
+            }
+
+            document.getElementById("playerName").innerText = playerData.name;
+            document.getElementById("impactScore").innerText = playerData.impact;
+            document.getElementById("rank").innerText = "#" + (Math.floor(Math.random() * 50) + 1);
+
+            // Handle Impact Difference
+            let diffElement = document.getElementById("impactDifference");
+            if (playerData.difference !== undefined && playerData.difference !== 0) {
+                let diff = playerData.difference;
+                let isPositive = diff > 0;
+                diffElement.innerText = isPositive ? `▲ +${diff} from last` : `▼ ${diff} from last`;
+                diffElement.style.color = isPositive ? '#22c55e' : '#ef4444'; // Green or Red
+                diffElement.style.opacity = '1';
+            } else {
+                diffElement.style.opacity = '0';
+            }
+
+            // Calculate components for pie chart
+            let runsComponent = Math.round(playerData.runs * 0.4);
+            let strikeRateComponent = Math.round(playerData.strikeRate * 0.2);
+            let wicketsComponent = Math.round(playerData.wickets * 15);
+            let situationComponent = Math.round(playerData.situation * 5);
+
+            let data = [
+                runsComponent,
+                strikeRateComponent,
+                wicketsComponent,
+                situationComponent
+            ];
+
+            // Store chart data for full analysis toggle
+            chartData = {
+                labels: ["Runs Factor", "Strike Rate Factor", "Wickets Factor", "Situation Factor"],
+                data: data,
+                playerData: playerData
+            };
+
+            if (chart) chart.destroy();
+
+            // Render initial chart
+            isFullAnalysis = false;
+            document.getElementById("fullAnalysisBtn").innerText = "Full Analysis";
+            initChart('pie');
+        }
+
+        function initChart(type) {
+            if (chart) chart.destroy();
+
+            const commonOptions = {
+                responsive: true,
+                maintainAspectRatio: false,
+                animation: {
+                    duration: 1200,
+                    easing: 'easeInOutQuart'
+                },
+                plugins: {
+                    legend: {
+                        position: type === 'pie' ? 'right' : 'top',
+                        labels: {
+                            color: '#f8fafc',
+                            padding: 20,
+                            usePointStyle: true,
+                            pointStyle: 'circle',
+                            font: {
+                                family: "'Inter', sans-serif",
+                                size: 14,
+                                weight: 600
+                            }
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(15, 23, 42, 0.95)',
+                        titleColor: '#94a3b8',
+                        bodyColor: '#f8fafc',
+                        borderColor: 'rgba(255,255,255,0.1)',
+                        borderWidth: 1,
+                        padding: 12,
+                        callbacks: {
+                            label: function (context) {
+                                return ` ${context.raw} Pts`;
+                            }
+                        }
+                    }
+                }
+            };
+
+            const barScales = {
+                x: {
+                    grid: { color: 'rgba(255, 255, 255, 0.05)', drawBorder: false },
+                    ticks: { color: '#94a3b8', font: { family: "'Inter', sans-serif" } }
+                },
+                y: {
+                    beginAtZero: true,
+                    grid: { color: 'rgba(255, 255, 255, 0.05)', drawBorder: false },
+                    ticks: { color: '#94a3b8', font: { family: "'Inter', sans-serif" } }
+                }
+            };
+
+            chart = new Chart(document.getElementById("impactChart"), {
+                type: type,
+                data: {
+                    labels: chartData.labels,
+                    datasets: [{
+                        label: "Impact Score Components",
+                        data: chartData.data,
+                        backgroundColor: [
+                            '#3b82f6', // Bright Blue
+                            '#8b5cf6', // Violet
+                            '#f43f5e', // Rose
+                            '#10b981'  // Emerald
+                        ],
+                        borderColor: '#1e293b',
+                        borderWidth: 2,
+                        hoverOffset: 15
+                    }]
+                },
+                options: {
+                    ...commonOptions,
+                    animation: type === 'pie' ? {
+                        ...commonOptions.animation,
+                        animateRotate: true,
+                        animateScale: true
+                    } : commonOptions.animation,
+                    scales: type === 'line' ? barScales : {}
+                }
+            });
+
+            // Fade in canvas after chart is created
+            const canvas = document.getElementById("impactChart");
+            setTimeout(() => {
+                canvas.style.opacity = 1;
+            }, 50);
+        }
+
+        function toggleFullAnalysis() {
+            isFullAnalysis = !isFullAnalysis;
+            const btn = document.getElementById("fullAnalysisBtn");
+
+            if (isFullAnalysis) {
+                btn.innerText = "Back to Pie Chart";
+
+                // Update chart config smoothly
+                chart.config.type = 'line';
+                chart.options.plugins.legend.position = 'top';
+                chart.options.scales = {
+                    x: {
+                        grid: { color: 'rgba(255, 255, 255, 0.05)', drawBorder: false },
+                        ticks: { color: '#94a3b8', font: { family: "'Inter', sans-serif" } }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: 'rgba(255, 255, 255, 0.05)', drawBorder: false },
+                        ticks: { color: '#94a3b8', font: { family: "'Inter', sans-serif" } }
+                    }
+                };
+
+                // Set Line specific styles
+                let dataset = chart.config.data.datasets[0];
+                dataset.backgroundColor = 'rgba(16, 185, 129, 0.2)'; // Transparent Emerald fill
+                dataset.borderColor = '#10b981'; // Emerald line
+                dataset.borderWidth = 3;
+                dataset.tension = 0.4; // Smooth curves
+                dataset.fill = true;
+                dataset.pointBackgroundColor = '#1e293b';
+                dataset.pointBorderColor = '#10b981';
+                dataset.pointBorderWidth = 2;
+                dataset.pointRadius = 5;
+                dataset.pointHoverRadius = 7;
+                delete dataset.hoverOffset; // Remove pie property
+
+                chart.update();
+
+            } else {
+                btn.innerText = "Full Analysis";
+
+                // Revert to pie chart smoothly
+                chart.config.type = 'pie';
+                chart.options.plugins.legend.position = 'right';
+                delete chart.options.scales; // Remove axes for pie chart
+
+                // Revert to pie specific styles
+                let dataset = chart.config.data.datasets[0];
+                dataset.backgroundColor = [
+                    '#3b82f6', // Bright Blue
+                    '#8b5cf6', // Violet
+                    '#f43f5e', // Rose
+                    '#10b981'  // Emerald
+                ];
+                dataset.borderColor = '#1e293b';
+                dataset.borderWidth = 2;
+                dataset.hoverOffset = 15;
+
+                // Trigger pie animation
+                chart.options.animation.animateRotate = true;
+                chart.options.animation.animateScale = true;
+
+                // Cleanup line specific styles
+                delete dataset.tension;
+                delete dataset.fill;
+                delete dataset.pointBackgroundColor;
+                delete dataset.pointBorderColor;
+                delete dataset.pointBorderWidth;
+                delete dataset.pointRadius;
+                delete dataset.pointHoverRadius;
+
+                chart.update();
+            }
+        }
+
+        // Load leaderboard from backend
+        async function loadLeaderboard() {
+            try {
+                // Modified to use relative path to ensure compatibility with Django setup
+                const response = await fetch('/leaderboard/');
+                const data = await response.json();
+                const tbody = document.querySelector('.leaderboard tbody');
+                tbody.innerHTML = '';
+                data.leaderboard.forEach(player => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td><span style="color: ${player.rank === 1 ? '#fbbf24' : player.rank === 2 ? '#94a3b8' : player.rank === 3 ? '#b45309' : 'inherit'}; font-weight:bold;">#${player.rank}</span></td>
+                        <td style="font-weight: 500;">${player.player}</td>
+                        <td style="color: var(--highlight); font-weight: 700;">${player.impact}</td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error loading leaderboard:', error);
+            }
+        }
+
+        // Initialize on page load
+        calculateImpact();
+        loadLeaderboard();
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Player Improvement Suggestions</title>
+    <style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+:root {
+    --bg-dark: #0f172a;
+    --bg-darker: #020617;
+    --glass-bg: rgba(30, 41, 59, 0.7);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --text-primary: #f8fafc;
+    --text-secondary: #94a3b8;
+    --accent-glow: rgba(34, 197, 94, 0.4);
+    --primary-btn: linear-gradient(135deg, #10b981, #3b82f6);
+    --primary-btn-hover: linear-gradient(135deg, #059669, #2563eb);
+    --input-bg: rgba(15, 23, 42, 0.6);
+    --highlight: #22c55e;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background: radial-gradient(circle at top, #1e293b 0%, #0f172a 100%);
+    color: var(--text-primary);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.orb-1,
+.orb-2 {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    z-index: -1;
+    opacity: 0.5;
+}
+
+.orb-1 {
+    top: -50px;
+    left: -100px;
+    width: 300px;
+    height: 300px;
+    background: #3b82f6;
+}
+
+.orb-2 {
+    bottom: -100px;
+    right: -50px;
+    width: 400px;
+    height: 400px;
+    background: #10b981;
+}
+
+header {
+    background: rgba(2, 6, 23, 0.8);
+    backdrop-filter: blur(10px);
+    padding: 10px 0;
+    text-align: center;
+    font-size: 20px;
+    font-weight: 700;
+    border-bottom: 1px solid var(--glass-border);
+    flex-shrink: 0;
+}
+
+.glass-panel {
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.suggestion-card {
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    overflow: hidden;
+}
+
+.suggestion-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+    border-color: rgba(255, 255, 255, 0.15);
+    background: rgba(15, 23, 42, 0.8);
+}
+
+.suggestion-card.expanded {
+    background: rgba(15, 23, 42, 0.9);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.suggestion-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+}
+
+.icon-box {
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 24px;
+}
+
+.icon-warning {
+    background: rgba(245, 158, 11, 0.1);
+    color: #f59e0b;
+    border: 1px solid rgba(245, 158, 11, 0.2);
+}
+
+.icon-critical {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+    border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.icon-excellent {
+    background: rgba(16, 185, 129, 0.1);
+    color: #10b981;
+    border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.suggestion-content {
+    flex: 1;
+}
+
+.suggestion-content h4 {
+    margin: 0 0 8px 0;
+    font-size: 1.1rem;
+    color: #f8fafc;
+}
+
+.suggestion-content p {
+    margin: 0;
+    color: #94a3b8;
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+.action-plan {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease, padding 0.4s ease;
+}
+
+.suggestion-card.expanded .action-plan {
+    max-height: 500px;
+    opacity: 1;
+    margin-top: 15px;
+    padding-top: 15px;
+}
+
+.action-plan h5 {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #a78bfa;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 600;
+}
+
+.action-plan ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.action-plan li {
+    color: #cbd5e1;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    margin: 0;
+    position: relative;
+    padding: 12px 15px 12px 42px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+}
+
+.action-plan li:hover {
+    background: rgba(167, 139, 250, 0.08);
+    border-color: rgba(167, 139, 250, 0.3);
+    transform: translateX(6px);
+    color: #f8fafc;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.action-plan li:active {
+    transform: scale(0.98);
+}
+
+.action-plan li:before {
+    content: "";
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 18px;
+    height: 18px;
+    border: 2px solid #a78bfa;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+}
+
+.action-plan li:hover:before {
+    background: rgba(167, 139, 250, 0.2);
+}
+
+.action-plan li.completed {
+    background: rgba(16, 185, 129, 0.05);
+    border-color: rgba(16, 185, 129, 0.2);
+    color: #64748b;
+    transform: translateX(0);
+}
+
+.action-plan li.completed .task-text {
+    text-decoration: line-through;
+    opacity: 0.7;
+    transition: all 0.3s ease;
+}
+
+.action-plan li.completed:before {
+    background: #10b981;
+    border-color: #10b981;
+}
+
+.action-plan li.completed:after {
+    content: "✓";
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: white;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.expand-indicator {
+    display: inline-block;
+    margin-left: 8px;
+    font-size: 0.8rem;
+    color: #a78bfa;
+    transition: transform 0.3s ease;
+}
+
+.suggestion-card.expanded .expand-indicator {
+    transform: rotate(180deg);
+}
+
+.card-hint {
+    font-size: 0.8rem;
+    color: #a78bfa;
+    margin-top: 10px;
+    opacity: 0;
+    transform: translateY(-5px);
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-weight: 500;
+}
+
+.suggestion-card:hover .card-hint {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.suggestion-card.expanded .card-hint {
+    display: none;
+}
+
+.header-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+    flex-shrink: 0;
+}
+
+.container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 15px 20px;
+}
+
+#suggestionsList {
+    flex: 1;
+    overflow-y: auto;
+    padding-right: 10px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+}
+
+#suggestionsList::-webkit-scrollbar {
+    width: 6px;
+}
+
+#suggestionsList::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+#suggestionsList::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+}
+
+.back-link {
+    color: var(--text-secondary);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    transition: color 0.3s ease;
+    font-weight: 500;
+}
+
+.back-link:hover {
+    color: white;
+}
+    </style>
+</head>
+
+<body>
+    <!-- Decorative background elements -->
+    <div class="orb-1"></div>
+    <div class="orb-2"></div>
+
+    <header>
+        ImpactMetric Dashboard
+    </header>
+
+    <div class="container">
+        <!-- Navigation -->
+        <div class="glass-panel" style="padding: 15px 20px; display: flex; align-items: center; margin-bottom: 15px;">
+            <a href="/calculator/" class="back-link" style="margin: 0;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round" style="margin-right:8px;">
+                    <line x1="19" y1="12" x2="5" y2="12"></line>
+                    <polyline points="12 19 5 12 12 5"></polyline>
+                </svg>
+                Back to Dashboard
+            </a>
+            <div style="font-weight: 600; color: #f8fafc; font-size: 1.1rem; flex: 1; text-align: center;">
+                AI Performance Analysis
+            </div>
+        </div>
+
+        <div class="glass-panel"
+            style="flex: 1; display: flex; flex-direction: column; padding: 25px; overflow: hidden;">
+            <div class="header-section">
+                <div>
+                    <h2 style="margin: 0 0 5px 0; color: #f8fafc;">Improvement Suggestions</h2>
+                    <p style="margin: 0; color: var(--text-secondary); font-size: 0.9rem;">
+                        Targeted advice based on <span id="playerName"
+                            style="color: var(--highlight); font-weight: 600;">-</span>'s latest match impact.
+                    </p>
+                </div>
+                <div style="text-align: right;">
+                    <div style="font-size: 0.8rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px;">
+                        Impact Score</div>
+                    <div id="impactScore" style="font-size: 2rem; font-weight: 700; color: #f8fafc; line-height: 1;">0
+                    </div>
+                </div>
+            </div>
+
+            <div id="suggestionsList">
+                <!-- Javascript will inject suggestions here -->
+            </div>
+        </div>
+    </div>
+
+    <script> 
+        let cardIdCounter = 0;
+
+        // Action plan database for suggestions
+        const actionPlans = {
+            "aggressive-intent": ["Study fast bowlers' line patterns", "Practice driving and pull shots off short balls", "Work on front foot movement in net sessions", "Build explosive batting routines for first 6 overs"],
+            "boundary-hunting": ["Identify fielding gaps through video analysis", "Practice placement shots against various bowling angles", "Develop deft touches and late-cut techniques", "Increase net practice against spin variations"],
+            "balanced-aggression": ["Maintain rhythm while watching for dot balls", "Practice situational shots based on field placement", "Study bowler tendencies in middle overs", "Work on converting 1-2 runs into quick beats"],
+            "elite-strike": ["Develop signature shots in specific match phases", "Study opposition psychology and change-ups", "Balance aggression with smart shot selection", "Mentor younger batsmen on explosive techniques"],
+            "innings-temperament": ["Spend minimum 10-15 mins in net without attempting shots", "Practice playing deliveries merit-based", "Build partnerships with lower-order batsmen", "Study patience-building from opening batsmen"],
+            "convert-starts": ["Average 3-4 runs per over once set", "Build 20+ run partnerships", "Identify your strongest ball to attack", "Practice rotating strike between left-right handers"],
+            "explosive-finishing": ["Master yorker handling and short-ball play", "Practice switch-hitting in death-over scenarios", "Work on quick singles in death overs", "Study boundary angles for different positions"],
+            "match-winning": ["Analyze opposition bowling in different phases", "Practice phase-specific game plans", "Build self-awareness in high-pressure moments", "Develop mentorship qualities for team"],
+            "bowling-variation": ["Learn yorker, slower ball, and bouncer variations", "Practice consistency in line and length", "Study batsmen video footage before matches", "Work on deception through bowling action"],
+            "penetrative-angles": ["Master cross-seam and seam positioning", "Practice off-cutters and leg-cutters", "Work on swing and movement early in match", "Develop partnership bowling strategies"],
+            "effective-rhythm": ["Analyze successful bowling spells on video", "Practice death-over variations (slower yorker, wide yorkers)", "Work on reverse swing if conditions permit", "Study opposition batsmen weaknesses"],
+            "world-class-spell": ["Maintain intensity and hunger for more wickets", "Study opposition game plans for different formats", "Develop match-winning strategies in big moments", "Work on psychological edge against star batsmen"],
+            "match-awareness": ["Watch international cricket match analysis regularly", "Study pitch behavior and field placements", "Learn decision-making in different match scenarios", "Develop opposition-specific attack strategies"],
+            "situational-decision": ["Read match momentum through scoreboard analysis", "Practice defensive and aggressive mode shifts", "Develop condition-based adaptability", "Study game-changing moments in cricket history"],
+            "game-intelligence": ["Analyze international match patterns and tactics", "Study opposition team strategies", "Develop your unique tactical contributions", "Build reputation as tactical asset in team"],
+            "championship-mentality": ["Mentor 2-3 younger players regularly", "Develop opposition game plans for teams", "Take responsibility in defining moments", "Study leadership from international captains"],
+            "skill-integration": ["Align batting aggression with match situation", "Sync bowling strategies with field placements", "Practice decision-making with specific metrics", "Work on team coordination and synergy"],
+            "consistency-reliability": ["Perform consistently across 3+ formats", "Develop signature strengths for exploitation", "Minimize weaknesses through focused training", "Build reputation for reliability"],
+            "high-impact-performer": ["Study elite player patterns in your role", "Practice critical moment decision-making", "Develop X-factor plays for unique situations", "Work on mental resilience in pressure"],
+            "elite-status": ["Master all formats and conditions", "Become opposition's primary concern", "Focus on legacy and record-breaking", "Develop iconic status in cricket worldwide"],
+            "dynamic-match": ["Dominate powerplay phases consistently", "Practice decisive finishing in last overs", "Set match tone through aggressive starts", "Study match acceleration from explosive players"],
+            "pressure-performer": ["Take responsibility in crunch situations", "Guide team through difficult match phases", "Develop clutch performance reputation", "Study match-winning moments from legends"],
+            "allrounder-advantage": ["Develop flexible batting positions (up/down order)", "Practice multi-role bowling responsibilities", "Build versatility as team asset", "Study all-rounders who changed match outcomes"]
+        };
+
+        function toggleCardExpand(cardId) {
+            const card = document.getElementById(cardId);
+            if (card) {
+                card.classList.toggle('expanded');
+            }
+        }
+
+        async function getAISuggestions(playerData) {
+            try {
+                // Point this to the newly implemented Django view correctly
+                const response = await fetch('/suggestions/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(playerData)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`API Error: ${response.status}`);
+                }
+
+                const data = await response.json();
+                if (data.suggestions) {
+                    const txt = data.suggestions;
+                    // Clean json fence if any since typical openAI model output has markdown blocks
+                    const cleaned = txt.replace(/```json/g, "").replace(/```/g, "").trim(); 
+                    return JSON.parse(cleaned);
+                }
+                
+                return null;
+            } catch (error) {
+                console.error('AI API Error:', error);
+                return null;
+            }
+        }
+
+        async function loadSuggestions() {
+            let storedData = localStorage.getItem('cricketPlayerData');
+            if (!storedData) {
+                window.location.href = '/';
+                return;
+            }
+
+            let playerData = JSON.parse(storedData);
+            document.getElementById('playerName').innerText = playerData.name;
+            document.getElementById('impactScore').innerText = playerData.impact;
+
+            const list = document.getElementById('suggestionsList');
+            list.innerHTML = '<div style="color: #94a3b8; padding: 20px; text-align: center;">🤖 Analyzing your performance with AI...</div>';
+
+            // Try to get AI suggestions
+            const aiSuggestions = await getAISuggestions(playerData);
+
+            let suggestionsHTML = "";
+
+            if (aiSuggestions && Array.isArray(aiSuggestions)) {
+                // Display AI-generated suggestions
+                aiSuggestions.forEach(suggestion => {
+                    const iconMap = {
+                        'critical': { emoji: '🚀', class: 'icon-critical' },
+                        'warning': { emoji: '⚡', class: 'icon-warning' },
+                        'excellent': { emoji: '💎', class: 'icon-excellent' }
+                    };
+                    const p = suggestion.priority ? suggestion.priority.toLowerCase() : 'warning';
+                    const icon = iconMap[p] || iconMap['warning'];
+                    suggestionsHTML += createCard(icon.class, icon.emoji, suggestion.title, suggestion.description);
+                });
+            } else {
+                // Fallback to rules engine if API fails
+                suggestionsHTML = generateFallbackSuggestions(playerData);
+            }
+
+            list.innerHTML = suggestionsHTML || '<div style="color: #94a3b8; padding: 20px; text-align: center;">No suggestions available right now.</div>';
+        }
+
+        function generateFallbackSuggestions(data) {
+            const runs = data.runs || 0;
+            const strikeRate = data.strikeRate || 0;
+            const wickets = data.wickets || 0;
+            const situation = data.situation || 1;
+            const impact = data.impact || 0;
+
+            let suggestionsHTML = "";
+
+            // 1. Strike Rate - Advanced Analysis
+            if (strikeRate < 80) {
+                suggestionsHTML += createCard("icon-critical", "🚀", "Aggressive Intent in Powerplay",
+                    `SR of ${Math.round(strikeRate)} suggests over-cautious play. Practice aggressive footwork, early commitment to shots, and capitalize on loose balls in first 6 overs.`);
+            } else if (strikeRate >= 80 && strikeRate < 110) {
+                suggestionsHTML += createCard("icon-warning", "📊", "Boundary Hunting Skills",
+                    `SR of ${Math.round(strikeRate)} shows steady approach. Work on identifying fielding gaps, practicing cross-bat shots, and rotating strike to maintain momentum.`);
+            } else if (strikeRate >= 110 && strikeRate < 140) {
+                suggestionsHTML += createCard("icon-excellent", "⚡", "Balanced Aggression",
+                    `SR of ${Math.round(strikeRate)} demonstrates excellent control with intent. Maintain this rhythm while focusing on position awareness to minimize dot balls.`);
+            } else if (strikeRate >= 140) {
+                suggestionsHTML += createCard("icon-excellent", "🔥", "Elite Strike Rate Execution",
+                    `Explosive batting (${Math.round(strikeRate)} SR). Channel this aggression wisely - maintain intensity while assessing match situation and bowler psychology.`);
+            }
+
+            // 2. Runs Accumulation - Advanced
+            if (runs < 15) {
+                suggestionsHTML += createCard("icon-critical", "🎯", "Build Innings Temperament",
+                    `With only ${runs} runs, focus on spending time in crease. Play balls merit-based, build partnerships, and wait for loose deliveries rather than forcing shots.`);
+            } else if (runs >= 15 && runs < 35) {
+                suggestionsHTML += createCard("icon-warning", "🏏", "Convert Starts into Scores",
+                    `${runs} runs shows you're getting in but not capitalizing. Practice rotating strike, building 3-4 run overs, and extending innings duration to compound pressure.`);
+            } else if (runs >= 35 && runs < 60) {
+                suggestionsHTML += createCard("icon-excellent", "📈", "Explosive Finishing Skills",
+                    `${runs} runs indicates middle-order stability. Work on death-over execution - switch grips, line variants, and short-ball handling for final assault.`);
+            } else if (runs >= 60) {
+                suggestionsHTML += createCard("icon-excellent", "👑", "Match-Winning Performance",
+                    `${runs} runs demonstrates match-winning potential. Maintain consistency, study opposition bowlers deeper, and develop phase-specific game plans for different match scenarios.`);
+            }
+
+            // 3. Wickets - Advanced Bowling Analysis
+            if (wickets === 0) {
+                suggestionsHTML += createCard("icon-warning", "🎳", "Bowling Variation Mastery",
+                    `Zero wickets suggests predictable bowling. Develop 3+ variations (yorker, slower, bouncer), work on line consistency, and study batsmen tendencies to create dismissal opportunities.`);
+            } else if (wickets === 1) {
+                suggestionsHTML += createCard("icon-warning", "📍", "Penetrative Bowling Angles",
+                    `Single wicket indicates decent execution. Experiment with cross-seam, off-cutters, and leg-cutters. Focus on bowling in partnerships and creating dot-ball pressure initially.`);
+            } else if (wickets === 2) {
+                suggestionsHTML += createCard("icon-excellent", "⚡", "Effective Bowling Rhythm",
+                    `2 wickets shows good execution. Analyze successful ball characteristics, replicate them, and work on death-over variations to extend impact in pressure phases.`);
+            } else if (wickets >= 3) {
+                suggestionsHTML += createCard("icon-excellent", "🎯", "World-Class Bowling Spell",
+                    `${wickets} wickets is outstanding performance. Maintain psychological edge, study opposition batsmen patterns, and develop match-winning bowling strategies for big moments.`);
+            }
+
+            // 4. Situation Handling - Mental & Strategic
+            if (situation >= 1 && situation <= 3) {
+                suggestionsHTML += createCard("icon-critical", "🧠", "Match Awareness Development",
+                    `Low situation rating (${situation}/10) indicates game awareness gap. Study match situations deeply - when to attack/defend, field placements, phase-specific strategies, and opposition psychology.`);
+            } else if (situation >= 4 && situation <= 6) {
+                suggestionsHTML += createCard("icon-warning", "🎭", "Situational Decision Making",
+                    `Situation rating of ${situation}/10 shows room for improvement. Develop cricket intelligence - read match momentum, adapt to conditions, and make aggressive/conservative calls contextually.`);
+            } else if (situation >= 7 && situation <= 8) {
+                suggestionsHTML += createCard("icon-excellent", "💡", "Strong Game Intelligence",
+                    `Situation rating of ${situation}/10 shows excellent awareness. Build on this by studying international match patterns, opposition specific strategies, and becoming a tactical asset.`);
+            } else if (situation >= 9) {
+                suggestionsHTML += createCard("icon-excellent", "🏆", "Championship Mentality",
+                    `Outstanding situation handling (${situation}/10) - this is leadership material. Mentor younger players, develop opposition game plans, and focus on defining moments in tournaments.`);
+            }
+
+            // 5. Overall Impact - Performance Integration
+            if (impact < 40) {
+                suggestionsHTML += createCard("icon-warning", "🔄", "Holistic Skill Integration",
+                    `Impact score of ${impact} suggests disconnected execution. Work on synergizing all aspects - align batting aggression with situation, bowling with field setup, and decisions with match context.`);
+            } else if (impact < 60) {
+                suggestionsHTML += createCard("icon-warning", "⚙️", "Consistency & Reliability",
+                    `Impact score of ${impact} - room for elevation. Focus on consistent performances across formats, conditions, and opposition types. Develop signature strengths and minimize weaknesses.`);
+            } else if (impact < 80) {
+                suggestionsHTML += createCard("icon-excellent", "📊", "High-Impact Performer",
+                    `Impact score of ${impact} showcases strong competence. Refine decision-making in critical moments, study match patterns of elite players in your role, and aim for X-factor moments.`);
+            } else if (impact >= 80) {
+                suggestionsHTML += createCard("icon-excellent", "⭐", "Elite Performer Status",
+                    `Impact score of ${impact} - elite execution level. Focus on legacy development, mastering all formats, and becoming the player opposition fears most in your position.`);
+            }
+
+            return suggestionsHTML;
+        }
+
+        function getActionPlanKey(title) {
+            const titleMap = {
+                "Aggressive Intent in Powerplay": "aggressive-intent",
+                "Boundary Hunting Skills": "boundary-hunting",
+                "Balanced Aggression": "balanced-aggression",
+                "Elite Strike Rate Execution": "elite-strike",
+                "Build Innings Temperament": "innings-temperament",
+                "Convert Starts into Scores": "convert-starts",
+                "Explosive Finishing Skills": "explosive-finishing",
+                "Match-Winning Performance": "match-winning",
+                "Bowling Variation Mastery": "bowling-variation",
+                "Penetrative Bowling Angles": "penetrative-angles",
+                "Effective Bowling Rhythm": "effective-rhythm",
+                "World-Class Bowling Spell": "world-class-spell",
+                "Match Awareness Development": "match-awareness",
+                "Situational Decision Making": "situational-decision",
+                "Strong Game Intelligence": "game-intelligence",
+                "Championship Mentality": "championship-mentality",
+                "Holistic Skill Integration": "skill-integration",
+                "Consistency & Reliability": "consistency-reliability",
+                "High-Impact Performer": "high-impact-performer",
+                "Elite Performer Status": "elite-status",
+                "Dynamic Match Impact": "dynamic-match",
+                "Pressure Performer": "pressure-performer",
+                "All-Rounder Advantage": "allrounder-advantage"
+            };
+            return titleMap[title] || title.toLowerCase().replace(/\s+/g, '-');
+        }
+
+        function toggleTaskComplete(event, element) {
+            event.stopPropagation();
+            element.classList.toggle('completed');
+        }
+
+        function createCard(iconClass, emoji, title, text, actionPlanKey = null) {
+            cardIdCounter++;
+            const cardId = `card-${cardIdCounter}`;
+            const key = actionPlanKey || getActionPlanKey(title);
+            const actions = actionPlans[key] || [];
+
+            const actionHTMLList = actions.length > 0
+                ? `<ul>${actions.map(action => `<li onclick="toggleTaskComplete(event, this)"><span class="task-text">${action}</span></li>`).join('')}</ul>`
+                : `<ul><li onclick="toggleTaskComplete(event, this)"><span class="task-text">Focus on continuous improvement in this area</span></li></ul>`;
+
+            return `
+            <div class="suggestion-card" id="${cardId}" onclick="toggleCardExpand('${cardId}')">
+                <div class="suggestion-header">
+                    <div class="icon-box ${iconClass}">${emoji}</div>
+                    <div class="suggestion-content">
+                        <h4>${title}<span class="expand-indicator">▼</span></h4>
+                        <p>${text}</p>
+                        <span class="card-hint">✨ Click to view actionable plan</span>
+                    </div>
+                </div>
+                <div class="action-plan">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 8px;">
+                        <h5>Action Plan</h5>
+                        <span style="font-size: 0.75rem; color: #a78bfa; background: rgba(167, 139, 250, 0.1); padding: 4px 10px; border-radius: 12px; border: 1px solid rgba(167, 139, 250, 0.2);">Interactive Checklist</span>
+                    </div>
+                    ${actionHTMLList}
+                </div>
+            </div>`;
+        }
+
+        // Initialize
+        loadSuggestions();
+    </script>
+</body>
+
+</html>

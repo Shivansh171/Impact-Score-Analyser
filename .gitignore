@@ -1,0 +1,27 @@
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Virtual environment
+venv/
+env/
+myenv/
+
+# SQLite database
+db.sqlite3
+
+# Environment variables
+.env
+
+# Django static files collected during deployment
+staticfiles/
+
+# Logs
+*.log
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Python virtualenv configs
+.python-version
